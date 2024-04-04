@@ -10,6 +10,5 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
-      - run: go install mvdan.cc/garble@latest
-      - run: garble -tiny build wowPing.go
+      - run: go build wowPing.go
       - run: ./wowPing

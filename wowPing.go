@@ -40,14 +40,12 @@ func main() {
 			for _, server := range group.List {
 				stat := statistics[server.Name]
 
-				result, err := ping.OpenConnection(server.Host, server.Port, params.Timeout)
+				responseTime, err := ping.OpenConnection(server.Host, server.Port, params.Timeout)
 
-				if err == nil && result.Status == "success" {
-					stat.ResponseDurations = append(stat.ResponseDurations, int(result.ResponseDuration.Milliseconds()))
-					fmt.Println(server.Name, result.ResponseDuration)
-				}
-
-				if err != nil {
+				if err == nil {
+					stat.ResponseDurations = append(stat.ResponseDurations, responseTime)
+					fmt.Printf("%v %vms\n", server.Name, responseTime)
+				} else {
 					if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, os.ErrDeadlineExceeded) {
 						stat.Timeouts++
 						fmt.Println(server.Name, "timeout")

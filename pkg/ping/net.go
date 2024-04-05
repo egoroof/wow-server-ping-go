@@ -3,23 +3,21 @@ package ping
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"time"
 )
 
-type result struct {
-	Status           string
-	ResponseDuration time.Duration
-}
+var ErrInvalidResponse = errors.New("invalid response")
 
-func OpenConnection(host string, port, timeout int) (result, error) {
+func OpenConnection(host string, port, timeout int) (int, error) {
 	address := fmt.Sprintf("%v:%v", host, port)
 	conn, err := net.DialTimeout("tcp", address, time.Millisecond*time.Duration(timeout))
 	connectTime := time.Now()
 	if err != nil {
-		return result{}, err
+		return 0, err
 	}
 	defer conn.Close()
 
@@ -28,25 +26,20 @@ func OpenConnection(host string, port, timeout int) (result, error) {
 	_, err = conn.Read(buf)
 	responseTime := time.Now()
 	if err != nil && err != io.EOF {
-		return result{}, err
+		return 0, err
 	}
 
 	var opcode uint16
 	reader := bytes.NewReader(buf[2:4])
 	err = binary.Read(reader, binary.LittleEndian, &opcode)
 	if err != nil {
-		return result{}, err
+		return 0, err
 	}
 
-	responseDuration := responseTime.Sub(connectTime).Round(time.Millisecond)
-
-	status := "fail"
-	if opcode == SMSG_AUTH_CHALLENGE {
-		status = "success"
+	if opcode != SMSG_AUTH_CHALLENGE {
+		return 0, ErrInvalidResponse
 	}
 
-	return result{
-		Status:           status,
-		ResponseDuration: responseDuration,
-	}, nil
+	res := responseTime.Sub(connectTime).Milliseconds()
+	return int(res), nil
 }

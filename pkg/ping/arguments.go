@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const REQUEST_COUNT = 4
+const REQUEST_COUNT = 6
 const TIMEOUT = 1000
 const SERVER_GROUP = "x1"
 

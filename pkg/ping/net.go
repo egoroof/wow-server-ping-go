@@ -12,34 +12,58 @@ import (
 
 var ErrInvalidResponse = errors.New("invalid response")
 
-func OpenConnection(host string, port, timeout int) (int, error) {
+type ServerResponse struct {
+	Name     string
+	Duration int
+	Error    error
+}
+
+func OpenConnection(name, host string, port, timeout int, respose chan<- ServerResponse) {
 	address := fmt.Sprintf("%v:%v", host, port)
 	conn, err := net.DialTimeout("tcp", address, time.Millisecond*time.Duration(timeout))
-	connectTime := time.Now()
 	if err != nil {
-		return 0, err
+		respose <- ServerResponse{
+			Name:  name,
+			Error: err,
+		}
+		return
 	}
 	defer conn.Close()
 
 	buf := make([]byte, 4)
-	conn.SetDeadline(connectTime.Add(time.Millisecond * time.Duration(timeout)))
+	conn.SetDeadline(time.Now().Add(time.Millisecond * time.Duration(timeout)))
+	connectTime := time.Now()
 	_, err = conn.Read(buf)
-	responseTime := time.Now()
+	duration := time.Since(connectTime)
 	if err != nil && err != io.EOF {
-		return 0, err
+		respose <- ServerResponse{
+			Name:  name,
+			Error: err,
+		}
+		return
 	}
 
 	var opcode uint16
 	reader := bytes.NewReader(buf[2:4])
 	err = binary.Read(reader, binary.LittleEndian, &opcode)
 	if err != nil {
-		return 0, err
+		respose <- ServerResponse{
+			Name:  name,
+			Error: err,
+		}
+		return
 	}
 
 	if opcode != SMSG_AUTH_CHALLENGE {
-		return 0, ErrInvalidResponse
+		respose <- ServerResponse{
+			Name:  name,
+			Error: ErrInvalidResponse,
+		}
+		return
 	}
 
-	res := responseTime.Sub(connectTime).Milliseconds()
-	return int(res), nil
+	respose <- ServerResponse{
+		Name:     name,
+		Duration: int(duration.Milliseconds()),
+	}
 }

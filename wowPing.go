@@ -17,46 +17,48 @@ func main() {
 	fmt.Printf("Timeout %v ms\n", params.Timeout)
 	fmt.Printf("Server group '%v'\n", params.ServerGroup)
 	statistics := make(map[string]ping.Statistics)
-
-	for _, group := range ping.Servers {
-		if group.Name != params.ServerGroup {
-			continue
-		}
-		for _, server := range group.List {
-			statistics[server.Name] = ping.Statistics{
-				ServerName: server.Name,
-			}
-		}
-	}
+	responseChan := make(chan ping.ServerResponse)
 
 	for i := 0; i < params.RequestCount; i++ {
 		fmt.Println("")
 		fmt.Printf("Request # %v\n", i+1)
+		connectionCount := 0
 
 		for _, group := range ping.Servers {
 			if group.Name != params.ServerGroup {
 				continue
 			}
+
 			for _, server := range group.List {
-				stat := statistics[server.Name]
-
-				responseTime, err := ping.OpenConnection(server.Host, server.Port, params.Timeout)
-
-				if err == nil {
-					stat.ResponseDurations = append(stat.ResponseDurations, responseTime)
-					fmt.Printf("%v %vms\n", server.Name, responseTime)
-				} else {
-					if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, os.ErrDeadlineExceeded) {
-						stat.Timeouts++
-						fmt.Println(server.Name, "timeout")
-					} else {
-						stat.Errors++
-						fmt.Println(server.Name, err)
-					}
-				}
-
-				statistics[server.Name] = stat
+				connectionCount++
+				go ping.OpenConnection(server.Name, server.Host, server.Port, params.Timeout, responseChan)
 			}
+		}
+
+		for i := 0; i < connectionCount; i++ {
+			response := <-responseChan
+
+			stat, statExist := statistics[response.Name]
+			if !statExist {
+				stat = ping.Statistics{
+					ServerName: response.Name,
+				}
+			}
+
+			if response.Error == nil {
+				stat.ResponseDurations = append(stat.ResponseDurations, response.Duration)
+				fmt.Printf("%v %vms\n", response.Name, response.Duration)
+			} else {
+				if errors.Is(response.Error, context.DeadlineExceeded) || errors.Is(response.Error, os.ErrDeadlineExceeded) {
+					stat.Timeouts++
+					fmt.Println(response.Name, "timeout")
+				} else {
+					stat.Errors++
+					fmt.Println(response.Name, response.Error)
+				}
+			}
+
+			statistics[response.Name] = stat
 		}
 	}
 

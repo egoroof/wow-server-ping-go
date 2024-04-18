@@ -10,5 +10,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
-      - run: go build wowPing.go
-      - run: ./wowPing -n=2
+      - run: go build cmd/wow-ping/wow-ping.go
+      - run: go build cmd/wow-ping-service/wow-ping-service.go
+      - run: ./wow-ping -n=2

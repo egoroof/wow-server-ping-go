@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,8 +15,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const port = 8090
-const sleepBetweenRequestsMs = 500
+var PORT = flag.Int("p", 8090, "port")
+var SLEEP_BETWEEN_REQUESTS_MS = flag.Int("sleep", 500, "sleep time between requests in ms")
+var TIMEOUT = flag.Int("t", 1000, "timeout")
+var SERVER_GROUP = flag.String("s", "x1", "server group")
 
 var promRespTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Name: "wow_server_response_time_ms",
@@ -33,11 +36,10 @@ var promRespErr = prometheus.NewCounterVec(prometheus.CounterOpts{
 }, []string{"server"})
 
 func recordMetrics() {
-	params := ping.ParseArguments(os.Args[1:])
 	responseChan := make(chan ping.ServerResponse)
 
 	for _, group := range ping.Servers {
-		if group.Name != params.ServerGroup {
+		if group.Name != *SERVER_GROUP {
 			continue
 		}
 
@@ -51,13 +53,13 @@ func recordMetrics() {
 		connectionCount := 0
 
 		for _, group := range ping.Servers {
-			if group.Name != params.ServerGroup {
+			if group.Name != *SERVER_GROUP {
 				continue
 			}
 
 			for _, server := range group.List {
 				connectionCount++
-				go ping.OpenConnection(server.Name, server.Host, server.Port, params.Timeout, responseChan)
+				go ping.OpenConnection(server.Name, server.Host, server.Port, *TIMEOUT, responseChan)
 			}
 		}
 
@@ -77,11 +79,15 @@ func recordMetrics() {
 			}
 		}
 
-		time.Sleep(time.Millisecond * sleepBetweenRequestsMs)
+		time.Sleep(time.Millisecond * time.Duration(*SLEEP_BETWEEN_REQUESTS_MS))
 	}
 }
 
 func main() {
+	flag.Parse()
+	log.Printf("Timeout %v ms\n", *TIMEOUT)
+	log.Printf("Server group '%v'\n", *SERVER_GROUP)
+
 	promReg := prometheus.NewRegistry()
 	promReg.MustRegister(promRespTime)
 	promReg.MustRegister(promRespTimeout)
@@ -92,7 +98,7 @@ func main() {
 
 	go recordMetrics()
 
-	log.Printf("Listening port %v\n", port)
-	err := http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
+	log.Printf("Listening port %v\n", *PORT)
+	err := http.ListenAndServe(fmt.Sprintf(":%v", *PORT), nil)
 	log.Fatal(err)
 }

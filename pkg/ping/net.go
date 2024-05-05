@@ -11,6 +11,7 @@ import (
 )
 
 var ErrInvalidResponse = errors.New("invalid response")
+var ErrOSTimeout = errors.New("OS goes sleep and causes timeout")
 
 type ServerResponse struct {
 	Name     string
@@ -19,8 +20,10 @@ type ServerResponse struct {
 }
 
 func OpenConnection(name, host string, port, timeout int, respose chan<- ServerResponse) {
+	timeoutDuration := time.Millisecond * time.Duration(timeout)
+
 	address := fmt.Sprintf("%v:%v", host, port)
-	conn, err := net.DialTimeout("tcp", address, time.Millisecond*time.Duration(timeout))
+	conn, err := net.DialTimeout("tcp", address, timeoutDuration)
 	if err != nil {
 		respose <- ServerResponse{
 			Name:  name,
@@ -31,7 +34,7 @@ func OpenConnection(name, host string, port, timeout int, respose chan<- ServerR
 	defer conn.Close()
 
 	buf := make([]byte, 4)
-	conn.SetDeadline(time.Now().Add(time.Millisecond * time.Duration(timeout)))
+	conn.SetDeadline(time.Now().Add(timeoutDuration))
 	connectTime := time.Now()
 	_, err = conn.Read(buf)
 	duration := time.Since(connectTime)
@@ -58,6 +61,15 @@ func OpenConnection(name, host string, port, timeout int, respose chan<- ServerR
 		respose <- ServerResponse{
 			Name:  name,
 			Error: ErrInvalidResponse,
+		}
+		return
+	}
+
+	// OS can goes sleep
+	if duration > timeoutDuration {
+		respose <- ServerResponse{
+			Name:  name,
+			Error: ErrOSTimeout,
 		}
 		return
 	}

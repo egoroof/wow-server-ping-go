@@ -27,7 +27,7 @@ var Servers = []serverGroup{
 		List: []server{
 			{
 				Name: "WoW Circle 3.3.5a x1",
-				Host: "212.41.28.25",
+				Host: "87.228.3.124",
 				Port: 11294,
 			},
 			{

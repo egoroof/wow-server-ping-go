@@ -66,7 +66,7 @@ func OpenConnection(name, host string, port, timeout int, respose chan<- ServerR
 	}
 
 	// OS can goes sleep
-	if duration > timeoutDuration {
+	if duration > timeoutDuration*2 {
 		respose <- ServerResponse{
 			Name:  name,
 			Error: ErrOSTimeout,

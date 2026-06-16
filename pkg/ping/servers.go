@@ -58,6 +58,41 @@ var Servers = []serverGroup{
 		},
 	},
 	{
+		Name: "x4",
+		List: []server{
+			{
+				Name: "WoW Circle 3.3.5a x4",
+				Host: "178.72.132.84",
+				Port: 10525,
+			},
+			{
+				Name: "WoW Circle 3.3.5a x4 [DE]",
+				Host: "194.247.187.136",
+				Port: 10525,
+			},
+			{
+				Name: "WoW Circle 3.3.5a x4 [FIN]",
+				Host: "193.84.2.201",
+				Port: 10525,
+			},
+			{
+				Name: "WoW Circle 3.3.5a x4 [NL]",
+				Host: "185.70.187.50",
+				Port: 10525,
+			},
+			{
+				Name: "WoW Circle 3.3.5a x4 [MSK]",
+				Host: "5.35.8.118",
+				Port: 10525,
+			},
+			{
+				Name: "WoW Circle 3.3.5a x4 [NSK]",
+				Host: "79.141.74.29",
+				Port: 10525,
+			},
+		},
+	},
+	{
 		Name: "x100",
 		List: []server{
 			{

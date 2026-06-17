@@ -12,4 +12,4 @@ jobs:
           go-version: "1.26"
       - run: go build cmd/wow-ping/wow-ping.go
       - run: go build cmd/wow-ping-service/wow-ping-service.go
-      - run: ./wow-ping -n=2
+      - run: ./wow-ping -requests=2

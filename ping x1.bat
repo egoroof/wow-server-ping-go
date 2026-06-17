@@ -1,2 +1,2 @@
-wow-ping.exe -n 6 -s x1
+wow-ping.exe -requests 6 -servers x1
 pause

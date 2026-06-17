@@ -16,10 +16,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var LISTEN_PORT = flag.Int("p", 8090, "listen port")
-var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
-var PING_TIMEOUT = flag.Duration("t", time.Second, "ping timeout")
-var SERVER_CONFIG = flag.String("s", "x1", "server config")
+var LISTEN_PORT = flag.Int("port", 8090, "listen port")
+var PING_INTERVAL = flag.Duration("interval", time.Millisecond*500, "sleep time between requests")
+var PING_TIMEOUT = flag.Duration("timeout", time.Second, "ping timeout")
+var SERVER_CONFIG = flag.String("servers", "x1", "server config")
 
 var promRespTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Name: "wow_server_response_time_ms",

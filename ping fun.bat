@@ -1,2 +1,2 @@
-wow-ping.exe -n 6 -s fun
+wow-ping.exe -requests 6 -servers fun
 pause

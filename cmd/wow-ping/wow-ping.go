@@ -12,10 +12,10 @@ import (
 	"github.com/egoroof/wow-server-ping/pkg/ping"
 )
 
-var REQUEST_COUNT = flag.Int("n", 4, "request count")
-var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
-var PING_TIMEOUT = flag.Duration("t", time.Second, "ping timeout")
-var SERVER_CONFIG = flag.String("s", "x1", "server config")
+var REQUEST_COUNT = flag.Int("requests", 4, "request count")
+var PING_INTERVAL = flag.Duration("interval", time.Millisecond*500, "sleep time between requests")
+var PING_TIMEOUT = flag.Duration("timeout", time.Second, "ping timeout")
+var SERVER_CONFIG = flag.String("servers", "x1", "server config")
 
 func main() {
 	flag.Parse()

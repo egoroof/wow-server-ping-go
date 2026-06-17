@@ -1,1 +1,1 @@
-# wow-server-ping-go
+# wow-server-ping

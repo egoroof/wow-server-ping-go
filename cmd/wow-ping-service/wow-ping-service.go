@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/egoroof/wow-server-ping-go/pkg/ping"
+	"github.com/egoroof/wow-server-ping/pkg/ping"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

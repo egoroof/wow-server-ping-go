@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/egoroof/wow-server-ping-go/pkg/ping"
+	"github.com/egoroof/wow-server-ping/pkg/ping"
 )
 
 var REQUEST_COUNT = flag.Int("n", 6, "request count")

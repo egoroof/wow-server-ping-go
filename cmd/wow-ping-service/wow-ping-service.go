@@ -16,7 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var PORT = flag.Int("p", 8090, "port")
+var LISTEN_PORT = flag.Int("p", 8090, "listen port")
 var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
 var PING_TIMEOUT = flag.Duration("t", time.Second, "ping timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
@@ -104,7 +104,7 @@ func main() {
 
 	go recordMetrics(servers)
 
-	log.Printf("Listening port %v\n", *PORT)
-	err = http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", *PORT), nil)
+	log.Printf("Listening port %v\n", *LISTEN_PORT)
+	err = http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", *LISTEN_PORT), nil)
 	log.Fatal(err)
 }

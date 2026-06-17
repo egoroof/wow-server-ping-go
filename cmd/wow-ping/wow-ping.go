@@ -36,6 +36,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	fmt.Printf("Loaded %v servers:\n", len(servers))
+	for _, server := range servers {
+		fmt.Printf("%v:%v - %v\n", server.Ip, server.Port, server.Name)
+	}
+
 	statistics := make(map[string]ping.Statistics)
 	responseChan := make(chan ping.ServerResponse)
 

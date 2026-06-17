@@ -74,7 +74,7 @@ func main() {
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
 	log.Printf("Timeout %v ms\n", *TIMEOUT)
-	log.Printf("Servers list %v\n", serversPath)
+	log.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)
 	if err != nil {
@@ -87,6 +87,11 @@ func main() {
 	if err != nil {
 		log.Println("Error during Unmarshal(): ", err)
 		os.Exit(1)
+	}
+
+	log.Printf("Loaded %v servers:\n", len(servers))
+	for _, server := range servers {
+		log.Printf("%v:%v - %v\n", server.Ip, server.Port, server.Name)
 	}
 
 	promReg := prometheus.NewRegistry()

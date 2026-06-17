@@ -1,0 +1,32 @@
+[
+	{
+		"name": "WoW Circle 3.3.5a x4",
+		"host": "178.72.132.84",
+		"port": 10525
+	},
+	{
+		"name": "WoW Circle 3.3.5a x4 [DE]",
+		"host": "194.247.187.136",
+		"port": 10525
+	},
+	{
+		"name": "WoW Circle 3.3.5a x4 [FIN]",
+		"host": "193.84.2.201",
+		"port": 10525
+	},
+	{
+		"name": "WoW Circle 3.3.5a x4 [NL]",
+		"host": "185.70.187.50",
+		"port": 10525
+	},
+	{
+		"name": "WoW Circle 3.3.5a x4 [MSK]",
+		"host": "5.35.8.118",
+		"port": 10525
+	},
+	{
+		"name": "WoW Circle 3.3.5a x4 [NSK]",
+		"host": "79.141.74.29",
+		"port": 10525
+	}
+]

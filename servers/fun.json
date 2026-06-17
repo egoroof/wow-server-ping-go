@@ -1,0 +1,32 @@
+[
+	{
+		"name": "WoW Circle 3.3.5a Fun",
+		"host": "87.228.3.124",
+		"port": 12373
+	},
+	{
+		"name": "WoW Circle 3.3.5a Fun [DE]",
+		"host": "194.247.187.187",
+		"port": 12373
+	},
+	{
+		"name": "WoW Circle 3.3.5a Fun [FIN]",
+		"host": "193.84.2.209",
+		"port": 12373
+	},
+	{
+		"name": "WoW Circle 3.3.5a Fun [NL]",
+		"host": "31.207.45.133",
+		"port": 12373
+	},
+	{
+		"name": "WoW Circle 3.3.5a Fun [MSK]",
+		"host": "45.138.163.171",
+		"port": 12373
+	},
+	{
+		"name": "WoW Circle 3.3.5a Fun [NSK]",
+		"host": "79.141.77.15",
+		"port": 12373
+	}
+]

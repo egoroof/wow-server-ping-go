@@ -19,9 +19,9 @@ func main() {
 	flag.Parse()
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
-	fmt.Printf("Requests limit %v\n", *REQUEST_COUNT)
+	fmt.Printf("Request count %v\n", *REQUEST_COUNT)
 	fmt.Printf("Timeout %v ms\n", *TIMEOUT)
-	fmt.Printf("Servers list %v\n", serversPath)
+	fmt.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)
 	if err != nil {

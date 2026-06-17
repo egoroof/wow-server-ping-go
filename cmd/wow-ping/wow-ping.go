@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -76,9 +75,4 @@ func main() {
 	}
 
 	ping.PrintResults(statistics)
-
-	fmt.Println("")
-	fmt.Print("Press Enter for exit...")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
 }

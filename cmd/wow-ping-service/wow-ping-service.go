@@ -17,7 +17,7 @@ import (
 )
 
 var PORT = flag.Int("p", 8090, "port")
-var SLEEP_BETWEEN_REQUESTS_MS = flag.Int("sleep", 500, "sleep time between requests in ms")
+var SLEEP_BETWEEN_REQUESTS = flag.Duration("sleep", time.Millisecond*500, "sleep time between requests")
 var TIMEOUT = flag.Int("t", 1000, "timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 
@@ -65,7 +65,7 @@ func recordMetrics(servers []ping.Server) {
 			}
 		}
 
-		time.Sleep(time.Millisecond * time.Duration(*SLEEP_BETWEEN_REQUESTS_MS))
+		time.Sleep(*SLEEP_BETWEEN_REQUESTS)
 	}
 }
 

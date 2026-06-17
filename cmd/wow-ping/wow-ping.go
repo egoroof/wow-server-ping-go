@@ -44,7 +44,7 @@ func main() {
 		fmt.Printf("Request # %v\n", i+1)
 
 		for _, server := range servers {
-			go ping.OpenConnection(server.Name, server.Host, server.Port, *TIMEOUT, responseChan)
+			go ping.OpenConnection(server.Name, server.Ip, server.Port, *TIMEOUT, responseChan)
 		}
 
 		for i := 0; i < len(servers); i++ {

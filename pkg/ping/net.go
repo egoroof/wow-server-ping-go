@@ -19,10 +19,10 @@ type ServerResponse struct {
 	Error    error
 }
 
-func OpenConnection(name, host string, port, timeout int, respose chan<- ServerResponse) {
+func OpenConnection(name, ip string, port, timeout int, respose chan<- ServerResponse) {
 	timeoutDuration := time.Millisecond * time.Duration(timeout)
 
-	address := fmt.Sprintf("%v:%v", host, port)
+	address := fmt.Sprintf("%v:%v", ip, port)
 	conn, err := net.DialTimeout("tcp", address, timeoutDuration)
 	if err != nil {
 		respose <- ServerResponse{

@@ -11,7 +11,7 @@ import (
 	"github.com/egoroof/wow-server-ping/pkg/ping"
 )
 
-var REQUEST_COUNT = flag.Int("n", 6, "request count")
+var REQUEST_COUNT = flag.Int("n", 4, "request count")
 var TIMEOUT = flag.Int("t", 1000, "timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 

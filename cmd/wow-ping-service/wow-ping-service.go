@@ -17,8 +17,8 @@ import (
 )
 
 var PORT = flag.Int("p", 8090, "port")
-var SLEEP_BETWEEN_REQUESTS = flag.Duration("sleep", time.Millisecond*500, "sleep time between requests")
-var TIMEOUT = flag.Int("t", 1000, "timeout")
+var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
+var PING_TIMEOUT = flag.Int("t", 1000, "ping timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 
 var promRespTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -46,7 +46,7 @@ func recordMetrics(servers []ping.Server) {
 
 	for {
 		for _, server := range servers {
-			go ping.OpenConnection(server.Name, server.Ip, server.Port, *TIMEOUT, responseChan)
+			go ping.OpenConnection(server.Name, server.Ip, server.Port, *PING_TIMEOUT, responseChan)
 		}
 
 		for range servers {
@@ -65,7 +65,7 @@ func recordMetrics(servers []ping.Server) {
 			}
 		}
 
-		time.Sleep(*SLEEP_BETWEEN_REQUESTS)
+		time.Sleep(*PING_INTERVAL)
 	}
 }
 
@@ -73,7 +73,7 @@ func main() {
 	flag.Parse()
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
-	log.Printf("Timeout %v ms\n", *TIMEOUT)
+	log.Printf("Timeout %v ms\n", *PING_TIMEOUT)
 	log.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)

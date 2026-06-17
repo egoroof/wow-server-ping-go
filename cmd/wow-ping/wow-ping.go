@@ -7,12 +7,14 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/egoroof/wow-server-ping/pkg/ping"
 )
 
 var REQUEST_COUNT = flag.Int("n", 4, "request count")
-var TIMEOUT = flag.Int("t", 1000, "timeout")
+var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
+var PING_TIMEOUT = flag.Int("t", 1000, "ping timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 
 func main() {
@@ -20,7 +22,7 @@ func main() {
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
 	fmt.Printf("Request count %v\n", *REQUEST_COUNT)
-	fmt.Printf("Timeout %v ms\n", *TIMEOUT)
+	fmt.Printf("Timeout %v ms\n", *PING_TIMEOUT)
 	fmt.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)
@@ -49,7 +51,7 @@ func main() {
 		fmt.Printf("Request # %v\n", i+1)
 
 		for _, server := range servers {
-			go ping.OpenConnection(server.Name, server.Ip, server.Port, *TIMEOUT, responseChan)
+			go ping.OpenConnection(server.Name, server.Ip, server.Port, *PING_TIMEOUT, responseChan)
 		}
 
 		for range servers {
@@ -77,6 +79,8 @@ func main() {
 
 			statistics[response.Name] = stat
 		}
+
+		time.Sleep(*PING_INTERVAL)
 	}
 
 	ping.PrintResults(statistics)

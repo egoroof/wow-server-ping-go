@@ -14,7 +14,7 @@ import (
 
 var REQUEST_COUNT = flag.Int("n", 4, "request count")
 var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
-var PING_TIMEOUT = flag.Int("t", 1000, "ping timeout")
+var PING_TIMEOUT = flag.Duration("t", time.Second, "ping timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
 	fmt.Printf("Request count %v\n", *REQUEST_COUNT)
-	fmt.Printf("Timeout %v ms\n", *PING_TIMEOUT)
+	fmt.Printf("Timeout %v\n", *PING_TIMEOUT)
 	fmt.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)

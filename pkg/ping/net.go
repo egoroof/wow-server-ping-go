@@ -19,11 +19,9 @@ type ServerResponse struct {
 	Error    error
 }
 
-func OpenConnection(name, ip string, port, timeout int, respose chan<- ServerResponse) {
-	timeoutDuration := time.Millisecond * time.Duration(timeout)
-
+func OpenConnection(name, ip string, port int, timeout time.Duration, respose chan<- ServerResponse) {
 	address := fmt.Sprintf("%v:%v", ip, port)
-	conn, err := net.DialTimeout("tcp", address, timeoutDuration)
+	conn, err := net.DialTimeout("tcp", address, timeout)
 	if err != nil {
 		respose <- ServerResponse{
 			Name:  name,
@@ -34,7 +32,7 @@ func OpenConnection(name, ip string, port, timeout int, respose chan<- ServerRes
 	defer conn.Close()
 
 	buf := make([]byte, 4)
-	conn.SetDeadline(time.Now().Add(timeoutDuration))
+	conn.SetDeadline(time.Now().Add(timeout))
 	connectTime := time.Now()
 	_, err = conn.Read(buf)
 	duration := time.Since(connectTime)
@@ -66,7 +64,7 @@ func OpenConnection(name, ip string, port, timeout int, respose chan<- ServerRes
 	}
 
 	// OS can goes sleep
-	if duration > timeoutDuration*2 {
+	if duration > timeout*2 {
 		respose <- ServerResponse{
 			Name:  name,
 			Error: ErrOSTimeout,

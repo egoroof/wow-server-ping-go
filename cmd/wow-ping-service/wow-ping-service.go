@@ -18,7 +18,7 @@ import (
 
 var PORT = flag.Int("p", 8090, "port")
 var PING_INTERVAL = flag.Duration("i", time.Millisecond*500, "sleep time between requests")
-var PING_TIMEOUT = flag.Int("t", 1000, "ping timeout")
+var PING_TIMEOUT = flag.Duration("t", time.Second, "ping timeout")
 var SERVER_CONFIG = flag.String("s", "x1", "server config")
 
 var promRespTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -73,7 +73,7 @@ func main() {
 	flag.Parse()
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
-	log.Printf("Timeout %v ms\n", *PING_TIMEOUT)
+	log.Printf("Timeout %v\n", *PING_TIMEOUT)
 	log.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)

@@ -52,7 +52,7 @@ func main() {
 			go ping.OpenConnection(server.Name, server.Ip, server.Port, *TIMEOUT, responseChan)
 		}
 
-		for i := 0; i < len(servers); i++ {
+		for range servers {
 			response := <-responseChan
 
 			stat, statExist := statistics[response.Name]

@@ -49,7 +49,7 @@ func recordMetrics(servers []ping.Server) {
 			go ping.OpenConnection(server.Name, server.Ip, server.Port, *TIMEOUT, responseChan)
 		}
 
-		for i := 0; i < len(servers); i++ {
+		for range servers {
 			response := <-responseChan
 
 			if response.Error == nil {

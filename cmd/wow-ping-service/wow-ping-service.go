@@ -92,7 +92,7 @@ func main() {
 
 	log.Printf("Loaded %v servers:\n", len(servers))
 	for _, server := range servers {
-		log.Printf("%v:%v - %v\n", server.Ip, server.Port, server.Name)
+		log.Printf("%v %v:%v\n", server.Name, server.Ip, server.Port)
 	}
 
 	promReg := prometheus.NewRegistry()

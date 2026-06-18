@@ -7,6 +7,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"slices"
+	"text/tabwriter"
 	"time"
 
 	"github.com/egoroof/wow-server-ping/pkg/ping"
@@ -40,9 +42,12 @@ func main() {
 	}
 
 	fmt.Printf("Loaded %v servers:\n", len(servers))
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintf(w, "Name\tIP\tPort\n")
 	for _, server := range servers {
-		fmt.Printf("%v:%v - %v\n", server.Ip, server.Port, server.Name)
+		fmt.Fprintf(w, "%v\t%v\t%v\n", server.Name, server.Ip, server.Port)
 	}
+	w.Flush()
 
 	statistics := make(map[string]ping.Statistics)
 	responseChan := make(chan ping.ServerResponse)
@@ -55,8 +60,10 @@ func main() {
 			go ping.OpenConnection(server.Name, server.Ip, server.Port, *PING_TIMEOUT, responseChan)
 		}
 
+		var responses []ping.ServerResponse
 		for range servers {
 			response := <-responseChan
+			responses = append(responses, response)
 
 			stat, statExist := statistics[response.Name]
 			if !statExist {
@@ -67,7 +74,6 @@ func main() {
 
 			if response.Error == nil {
 				stat.ResponseDurations = append(stat.ResponseDurations, response.Duration)
-				fmt.Printf("%v %vms\n", response.Name, response.Duration)
 			} else {
 				if errors.Is(response.Error, context.DeadlineExceeded) || errors.Is(response.Error, os.ErrDeadlineExceeded) {
 					stat.Timeouts++
@@ -80,6 +86,17 @@ func main() {
 
 			statistics[response.Name] = stat
 		}
+		slices.SortFunc(responses, func(a, b ping.ServerResponse) int {
+			return a.Duration - b.Duration
+		})
+
+		for _, response := range responses {
+			if response.Duration == 0 {
+				continue
+			}
+			fmt.Fprintf(w, "%v\t%vms\n", response.Name, response.Duration)
+		}
+		w.Flush()
 
 		time.Sleep(*PING_INTERVAL)
 	}

@@ -74,6 +74,7 @@ func main() {
 	serversPath := fmt.Sprintf("./servers/%v.json", *SERVER_CONFIG)
 
 	log.Printf("Timeout %v\n", *PING_TIMEOUT)
+	log.Printf("Interval %v\n", *PING_INTERVAL)
 	log.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)

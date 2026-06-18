@@ -23,6 +23,7 @@ func main() {
 
 	fmt.Printf("Request count %v\n", *REQUEST_COUNT)
 	fmt.Printf("Timeout %v\n", *PING_TIMEOUT)
+	fmt.Printf("Interval %v\n", *PING_INTERVAL)
 	fmt.Printf("Server list %v\n", serversPath)
 
 	serversFile, err := os.ReadFile(serversPath)

@@ -1,0 +1,31 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+      - name: Build Windows binary
+        run: GOOS=windows GOARCH=amd64 go build -o wow-ping.exe wow-ping.go
+      - name: Prepare release bundle
+        run: |
+          NAME="wow-ping"
+          mkdir "$NAME"
+          cp -r servers "$NAME/"
+          cp *.bat "$NAME/"
+          cp wow-ping.exe "$NAME/"
+          cp README.md "$NAME/"
+          cp LICENSE.md "$NAME/"
+          zip -r "${NAME}.zip" "$NAME"
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: wow-ping.zip

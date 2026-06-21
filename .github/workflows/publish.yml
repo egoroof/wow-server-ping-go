@@ -22,11 +22,11 @@ jobs:
           NAME="wow-ping"
           mkdir "$NAME"
           cp -r servers "$NAME/"
-          cp *.bat "$NAME/"
+          cp ping*.bat "$NAME/"
           cp wow-ping.exe "$NAME/"
           cp README.md "$NAME/"
           cp LICENSE.md "$NAME/"
-          zip -r "${NAME}.zip" "$NAME"
+          zip -qr "${NAME}.zip" "$NAME"
       - name: Release
         uses: softprops/action-gh-release@v3
         with:

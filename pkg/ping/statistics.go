@@ -37,7 +37,6 @@ func PrintResults(statistics map[string]Statistics) {
 		return a.Avg - b.Avg
 	})
 
-	fmt.Fprintf(w, "\nServer\tPing, ms\n")
 	for _, stats := range serverTable {
 		timeoutStr := ""
 		if stats.Timeouts > 0 {
@@ -49,7 +48,7 @@ func PrintResults(statistics map[string]Statistics) {
 		}
 		statsStr := "unavailable"
 		if stats.Avg > 0 {
-			statsStr = fmt.Sprintf("%v ± %v", stats.Avg, stats.Jitter)
+			statsStr = fmt.Sprintf("%v\t± %v", stats.Avg, stats.Jitter)
 		}
 		fmt.Fprintf(w, "%v\t%v\t%v\t%v\n", stats.ServerName, statsStr, timeoutStr, errorStr)
 	}

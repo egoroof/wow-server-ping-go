@@ -8,12 +8,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"text/tabwriter"
 	"time"
 
 	"github.com/egoroof/wow-server-ping/pkg/ping"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var LISTEN_PORT = flag.Int("port", 0, "listen port for Prometheus metrics")
@@ -23,27 +22,31 @@ var STATS_INTERVAL = flag.Duration("stats-interval", time.Second*30, "console st
 var STATS_COUNT = flag.Int("stats", 0, "how many stats to display before exit")
 var SERVER_CONFIG = flag.String("servers", "x1", "server config")
 
-var promRespTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-	Name: "wow_server_response_time_ms",
-	Help: "WoW server response time in ms",
-}, []string{"server"})
-
-var promRespTimeout = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Name: "wow_server_timeout_count",
-	Help: "WoW server timeout count",
-}, []string{"server"})
-
-var promRespErr = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Name: "wow_server_error_count",
-	Help: "WoW server error count",
-}, []string{"server"})
+var promRespTime = ping.PrometheusMetric{
+	Name:       "wow_server_response_time_ms",
+	Help:       "WoW server response time in ms",
+	Type:       "gauge",
+	LabelNames: []string{"server"},
+}
+var promRespTimeout = ping.PrometheusMetric{
+	Name:       "wow_server_timeout_count",
+	Help:       "WoW server timeout count",
+	Type:       "counter",
+	LabelNames: []string{"server"},
+}
+var promRespErr = ping.PrometheusMetric{
+	Name:       "wow_server_error_count",
+	Help:       "WoW server error count",
+	Type:       "counter",
+	LabelNames: []string{"server"},
+}
 
 func recordMetrics(servers []ping.Server) {
 	responseChan := make(chan ping.ServerResponse)
 
 	for _, server := range servers {
-		promRespTimeout.WithLabelValues(server.Name).Add(0)
-		promRespErr.WithLabelValues(server.Name).Add(0)
+		promRespTimeout.SetValue([]string{server.Name}, 0)
+		promRespErr.SetValue([]string{server.Name}, 0)
 	}
 
 	statsLogTime := time.Now()
@@ -65,16 +68,16 @@ func recordMetrics(servers []ping.Server) {
 			}
 
 			if response.Error == nil {
-				promRespTime.WithLabelValues(response.Name).Set(float64(response.Duration))
+				promRespTime.SetValue([]string{response.Name}, response.Duration)
 				stat.ResponseDurations = append(stat.ResponseDurations, response.Duration)
 			} else {
-				promRespTime.DeleteLabelValues(response.Name)
+				promRespTime.Delete([]string{response.Name})
 				if errors.Is(response.Error, context.DeadlineExceeded) || errors.Is(response.Error, os.ErrDeadlineExceeded) {
-					promRespTimeout.WithLabelValues(response.Name).Inc()
+					promRespTimeout.AddValue([]string{response.Name}, 1)
 					stat.Timeouts++
 				} else {
 					fmt.Printf("%v %v\n", response.Name, response.Error)
-					promRespErr.WithLabelValues(response.Name).Inc()
+					promRespErr.AddValue([]string{response.Name}, 1)
 					stat.Errors++
 				}
 			}
@@ -139,13 +142,18 @@ func main() {
 		fmt.Println("Listen port is not set. Prometheus metrics disabled")
 		recordMetrics(servers)
 	} else {
-		promReg := prometheus.NewRegistry()
-		promReg.MustRegister(promRespTime)
-		promReg.MustRegister(promRespTimeout)
-		promReg.MustRegister(promRespErr)
-
-		handler := promhttp.HandlerFor(promReg, promhttp.HandlerOpts{})
-		http.Handle("/metrics", handler)
+		metrics := []*ping.PrometheusMetric{
+			&promRespErr,
+			&promRespTime,
+			&promRespTimeout,
+		}
+		http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+			var resp strings.Builder
+			for _, metric := range metrics {
+				resp.WriteString(metric.GetString())
+			}
+			w.Write([]byte(resp.String()))
+		})
 
 		go recordMetrics(servers)
 		fmt.Printf("Listening port %v\n", *LISTEN_PORT)

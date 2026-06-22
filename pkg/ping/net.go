@@ -42,7 +42,11 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 		return
 	}
 
-	SMSG_AUTH_CHALLENGE := []byte{0, 42, 236, 1, 1, 0, 0, 0}
+	SMSG_AUTH_CHALLENGE := []byte{
+		0, 42, // BE size
+		236, 1, // LE opcode 0x1EC
+		1, 0, 0, 0, // LE server_seed
+	}
 	if bytesRead != 44 || !bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) {
 		respose <- ServerResponse{
 			Name:  name,

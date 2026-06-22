@@ -2,10 +2,8 @@ package ping
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
-	"io"
 	"net"
 	"time"
 )
@@ -31,22 +29,11 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 	}
 	defer conn.Close()
 
-	buf := make([]byte, 4)
+	buf := make([]byte, 64)
 	conn.SetDeadline(time.Now().Add(timeout))
 	connectTime := time.Now()
-	_, err = conn.Read(buf)
+	bytesRead, err := conn.Read(buf)
 	duration := time.Since(connectTime)
-	if err != nil && err != io.EOF {
-		respose <- ServerResponse{
-			Name:  name,
-			Error: err,
-		}
-		return
-	}
-
-	var opcode uint16
-	reader := bytes.NewReader(buf[2:4])
-	err = binary.Read(reader, binary.LittleEndian, &opcode)
 	if err != nil {
 		respose <- ServerResponse{
 			Name:  name,
@@ -55,7 +42,8 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 		return
 	}
 
-	if opcode != SMSG_AUTH_CHALLENGE {
+	SMSG_AUTH_CHALLENGE := []byte{0, 42, 236, 1, 1, 0, 0, 0}
+	if bytesRead != 44 || !bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) {
 		respose <- ServerResponse{
 			Name:  name,
 			Error: ErrInvalidResponse,

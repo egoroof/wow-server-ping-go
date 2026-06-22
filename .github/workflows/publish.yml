@@ -19,7 +19,8 @@ jobs:
         run: GOOS=windows GOARCH=amd64 go build -o wow-ping.exe wow-ping.go
       - name: Prepare release bundle
         run: |
-          NAME="wow-ping-$GITHUB_REF_NAME.windows-amd64"
+          NAME="wow-ping-${{ github.ref_name }}.windows-amd64"
+          echo "$NAME"
           mkdir "$NAME"
           cp -r servers "$NAME/"
           cp ping*.bat "$NAME/"
@@ -30,4 +31,4 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          files: wow-ping-$GITHUB_REF_NAME.windows-amd64.zip
+          files: wow-ping-${{ github.ref_name }}.windows-amd64.zip

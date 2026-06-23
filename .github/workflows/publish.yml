@@ -24,8 +24,7 @@ jobs:
           cp -r servers "$NAME/"
           cp ping*.bat "$NAME/"
           cp wow-ping.exe "$NAME/"
-          cp README.md "$NAME/"
-          cp LICENSE.md "$NAME/"
+          cp *.md "$NAME/"
           zip -qr "${NAME}.zip" "$NAME"
       - name: Release
         uses: softprops/action-gh-release@v3

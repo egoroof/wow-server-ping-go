@@ -14,7 +14,7 @@ For Windows you can find binary in the [Release page](https://github.com/egoroof
 
 Server configs are in `servers` folder. You can change them or add another file in same format.
 
-Start `wow-ping` with `-servers` option to choose servers config. For example `wow-ping -servers x1` will load servers config from `servers/x1.json` file.
+Start `wow-ping` (`wow-ping.exe` in Windows) with `-servers` option to choose servers config. For example `wow-ping -servers x1` will load servers config from `servers/x1.json` file.
 
 Ping tool will start collecting statistics and will print it to console periodically.
 

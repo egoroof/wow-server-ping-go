@@ -1,5 +1,8 @@
 # wow-server-ping
 
+| [🇬🇧 English](README.md) | **🇷🇺 Русский** |
+| :-: | :-: |
+
 Утилита для пинга серверов WoW 335a.
 
 ![console usage](./images/console.png)

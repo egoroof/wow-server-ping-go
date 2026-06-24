@@ -1,5 +1,8 @@
 # wow-server-ping
 
+| **🇬🇧 English** | [🇷🇺 Русский](README.ru.md) |
+| :-: | :-: |
+
 Ping tool for WoW 335a servers.
 
 ![console usage](./images/console.png) 

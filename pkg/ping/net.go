@@ -12,17 +12,25 @@ var ErrInvalidResponse = errors.New("invalid response")
 var ErrOSTimeout = errors.New("OS goes sleep and causes timeout")
 
 type ServerResponse struct {
-	Name     string
+	Name  string
+	Group string
+
 	Duration int
 	Error    error
 }
 
-func OpenConnection(name, ip string, port int, timeout time.Duration, respose chan<- ServerResponse) {
+func OpenConnection(
+	name, group, ip string,
+	port int,
+	timeout time.Duration,
+	respose chan<- ServerResponse,
+) {
 	address := fmt.Sprintf("%v:%v", ip, port)
 	conn, err := net.DialTimeout("tcp", address, timeout)
 	if err != nil {
 		respose <- ServerResponse{
 			Name:  name,
+			Group: group,
 			Error: err,
 		}
 		return
@@ -37,6 +45,7 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 	if err != nil {
 		respose <- ServerResponse{
 			Name:  name,
+			Group: group,
 			Error: err,
 		}
 		return
@@ -50,6 +59,7 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 	if bytesRead != 44 || !bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) {
 		respose <- ServerResponse{
 			Name:  name,
+			Group: group,
 			Error: ErrInvalidResponse,
 		}
 		return
@@ -59,6 +69,7 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 	if duration > timeout*2 {
 		respose <- ServerResponse{
 			Name:  name,
+			Group: group,
 			Error: ErrOSTimeout,
 		}
 		return
@@ -66,6 +77,7 @@ func OpenConnection(name, ip string, port int, timeout time.Duration, respose ch
 
 	respose <- ServerResponse{
 		Name:     name,
+		Group:    group,
 		Duration: int(duration.Milliseconds()),
 	}
 }

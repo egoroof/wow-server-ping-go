@@ -18,7 +18,7 @@ import (
 var LISTEN_PORT = flag.Int("port", 0, "listen port for Prometheus metrics")
 var PING_INTERVAL = flag.Duration("interval", time.Millisecond*500, "sleep time between requests")
 var PING_TIMEOUT = flag.Duration("timeout", time.Second, "ping timeout")
-var STATS_INTERVAL = flag.Duration("stats-interval", time.Second*30, "console stats interval")
+var STATS_INTERVAL = flag.Duration("stats-interval", time.Second*30, "how often stats should be printed to console")
 var STATS_COUNT = flag.Int("stats", 0, "how many stats to display before exit")
 var SERVER_CONFIG = flag.String("servers", "x1", "server config")
 

@@ -23,6 +23,15 @@ Ping tool will start collecting statistics and will print it to console periodic
 
 You can confugure many options. To see all available options run `wow-ping --help`
 
+| Flag | Default | Description |
+|---|---|---|
+| `-servers` | `x1` | Servers config from `servers` folder |
+| `-port` | - | Listen port for Prometheus metrics |
+| `-timeout` | `1s` | Ping timeout |
+| `-interval` | `500ms` | Sleep time between requests |
+| `-stats-interval` | `30s` | How often stats should be printed to console |
+| `-stats` | - | How many stats to display before exit |
+
 ## Antivirus reaction
 
 Some antivirus software can detect malware (false positive) in downloaded Windows release and block download. You can add an exception and try to download it again. This tool doesn't have any malware. You can check source code and compile it yourself with golang. Also you can scan it with VirusTotal.

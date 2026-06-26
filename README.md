@@ -21,7 +21,7 @@ Start `wow-ping` (`wow-ping.exe` in Windows) with `-servers` option to choose se
 
 Ping tool will start collecting statistics and will print it to console periodically.
 
-You can confugure many options. To see all available options run `wow-ping --help`
+Available settings:
 
 | Flag | Default | Description |
 |---|---|---|

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"sync"
 )
 
 type metricElem struct {
@@ -17,9 +18,14 @@ type PrometheusMetric struct {
 	Type       string // gauge | counter
 	LabelNames []string
 	elems      []metricElem
+
+	mu sync.Mutex
 }
 
 func (m *PrometheusMetric) SetValue(labels []string, value int) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	for i, elem := range m.elems {
 		if slices.Equal(elem.labels, labels) {
 			m.elems[i].value = value
@@ -34,6 +40,9 @@ func (m *PrometheusMetric) SetValue(labels []string, value int) {
 }
 
 func (m *PrometheusMetric) AddValue(labels []string, value int) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	for i, elem := range m.elems {
 		if slices.Equal(elem.labels, labels) {
 			m.elems[i].value = elem.value + value
@@ -48,6 +57,9 @@ func (m *PrometheusMetric) AddValue(labels []string, value int) {
 }
 
 func (m *PrometheusMetric) Delete(labels []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	for i, elem := range m.elems {
 		if slices.Equal(elem.labels, labels) {
 			m.elems = slices.Delete(m.elems, i, i+1)
@@ -57,6 +69,9 @@ func (m *PrometheusMetric) Delete(labels []string) {
 }
 
 func (m *PrometheusMetric) GetString() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	lines := []string{
 		fmt.Sprintf("# HELP %v %v", m.Name, m.Help),
 		fmt.Sprintf("# TYPE %v %v", m.Name, m.Type),

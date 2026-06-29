@@ -1,9 +1,8 @@
 package ping
 
 type Server struct {
-	Name string
-	Ip   string
-	Port int
+	Name    string
+	Address string
 
 	Group string
 }

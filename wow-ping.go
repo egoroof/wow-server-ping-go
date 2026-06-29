@@ -55,7 +55,7 @@ func recordMetrics(servers []ping.Server) {
 	for {
 		for _, server := range servers {
 			go ping.OpenConnection(
-				server.Name, server.Group, server.Ip, server.Port, *PING_TIMEOUT, responseChan,
+				server.Name, server.Group, server.Address, *PING_TIMEOUT, responseChan,
 			)
 		}
 
@@ -141,7 +141,7 @@ func main() {
 
 		fmt.Printf("Loaded %v servers:\n", len(servers))
 		for i, server := range servers {
-			fmt.Fprintf(w, "%v\t%v\t%v\n", server.Name, server.Ip, server.Port)
+			fmt.Fprintf(w, "%v\t%v\n", server.Name, server.Address)
 
 			servers[i].Group = configName
 		}

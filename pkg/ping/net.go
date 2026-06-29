@@ -3,7 +3,6 @@ package ping
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"net"
 	"time"
 )
@@ -20,12 +19,10 @@ type ServerResponse struct {
 }
 
 func OpenConnection(
-	name, group, ip string,
-	port int,
+	name, group, address string,
 	timeout time.Duration,
 	respose chan<- ServerResponse,
 ) {
-	address := fmt.Sprintf("%v:%v", ip, port)
 	conn, err := net.DialTimeout("tcp", address, timeout)
 	if err != nil {
 		respose <- ServerResponse{

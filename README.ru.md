@@ -25,7 +25,7 @@
 
 Запустите, указав свой логин и игровой сервер:
 
-```
+```shell
 realmlist.exe user@host
 ```
 
@@ -35,13 +35,13 @@ realmlist.exe user@host
 
 Простой пример, который загружает список миров из файла `servers/logon.wowcircle.me.json`, отправляет пинг запросы и выводит статистику каждые 30 секунд:
 
-```
+```shell
 wow-ping.exe -servers logon.wowcircle.me
 ```
 
 Можно отфильтровать список серверов с помощью регулярного выражения опцией `-filter`:
 
-```
+```shell
 wow-ping.exe -servers logon.wowcircle.me -filter "x4"
 ```
 

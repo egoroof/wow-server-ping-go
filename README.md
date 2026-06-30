@@ -25,7 +25,7 @@ You will need to extract realm list first. Wow servers can give you realm list o
 
 Run with your user and server host:
 
-```
+```shell
 realmlist.exe user@host
 ```
 
@@ -35,13 +35,13 @@ If you worry about your credentials you can also run Wireshark, login in your Wo
 
 Simple example, which  loads realm list from `servers/logon.wowcircle.me.json` file, sends ping requests and print statistics every 30 seconds:
 
-```
+```shell
 wow-ping.exe -servers logon.wowcircle.me
 ```
 
 You can filter servers by regexp with `-filter` option:
 
-```
+```shell
 wow-ping.exe -servers logon.wowcircle.me -filter "x4"
 ```
 

@@ -17,7 +17,7 @@ For Windows you can find builds on the [Release page](https://github.com/egoroof
 
 Server configs are in `servers` folder. You can change them or add another file in same format.
 
-Start `wow-ping` (`wow-ping.exe` in Windows) with `-servers` option to choose servers config. For example `wow-ping -servers x1` will load servers config from `servers/x1.json` file.
+Start `wow-ping.exe` with `-servers` option to choose servers config. For example `wow-ping.exe -servers x1` will load servers config from `servers/x1.json` file.
 
 Ping tool will start collecting statistics and will print it to console periodically.
 
@@ -25,12 +25,13 @@ Available settings:
 
 | Flag | Default | Description |
 |---|---|---|
-| `-servers` | `x1` | Servers config from `servers` folder |
+| `-servers` | `logon.wowcircle.me` | Servers config from `servers` folder |
 | `-port` | - | Listen port for Prometheus metrics |
 | `-timeout` | `1s` | Ping timeout |
 | `-interval` | `500ms` | Sleep time between requests |
 | `-stats-interval` | `30s` | How often stats should be printed to console |
 | `-stats` | - | How many stats to display before exit |
+| `-filter` | - | Regexp for filter servers by name |
 
 ## Antivirus reaction
 

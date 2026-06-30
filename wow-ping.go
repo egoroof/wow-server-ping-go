@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -20,7 +21,8 @@ var PING_INTERVAL = flag.Duration("interval", time.Millisecond*500, "sleep time 
 var PING_TIMEOUT = flag.Duration("timeout", time.Second, "ping timeout")
 var STATS_INTERVAL = flag.Duration("stats-interval", time.Second*30, "how often stats should be printed to console")
 var STATS_COUNT = flag.Int("stats", 0, "how many stats to display before exit")
-var SERVER_CONFIG = flag.String("servers", "x1", "server config. Can pass multiple with comma: x1,x4")
+var SERVER_CONFIG = flag.String("servers", "logon.wowcircle.me", "server config. Can pass multiple with comma")
+var FILTER = flag.String("filter", "", "regexp for filter servers by name")
 
 var promRespTime = ping.PrometheusMetric{
 	Name:       "wow_server_response_time_ms",
@@ -120,6 +122,12 @@ func main() {
 	fmt.Printf("Ping interval %v\n", *PING_INTERVAL)
 	fmt.Printf("Stats interval %v\n", *STATS_INTERVAL)
 
+	var filter *regexp.Regexp
+	if *FILTER != "" {
+		fmt.Printf("Server name filter regexp: %v\n", *FILTER)
+		filter = regexp.MustCompile(*FILTER)
+	}
+
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	var allServers []ping.Server
 	for _, configName := range configs {
@@ -139,14 +147,23 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("Loaded %v servers:\n", len(servers))
-		for i, server := range servers {
+		fmt.Printf("Loaded servers:\n")
+		for _, server := range servers {
+			if *FILTER != "" && !filter.MatchString(server.Name) {
+				continue
+			}
+
 			fmt.Fprintf(w, "%v\t%v\n", server.Name, server.Address)
 
-			servers[i].Group = configName
+			server.Group = configName
+			allServers = append(allServers, server)
 		}
 		w.Flush()
-		allServers = append(allServers, servers...)
+	}
+
+	if len(allServers) == 0 {
+		fmt.Println("No servers found")
+		os.Exit(1)
 	}
 
 	if *LISTEN_PORT == 0 {

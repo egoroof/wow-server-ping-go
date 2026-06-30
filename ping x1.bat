@@ -1,1 +1,1 @@
-wow-ping.exe -servers x1
+wow-ping.exe -servers logon.wowcircle.me -filter "x1$|x1 "

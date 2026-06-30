@@ -3,7 +3,7 @@ package wow
 type loginResult = byte
 
 // https://wowdev.wiki/Login_Packet_Results
-//https://gtker.com/wow_messages/docs/loginresult.html#protocol-version-8
+// https://gtker.com/wow_messages/docs/loginresult.html#protocol-version-8
 
 const (
 	success loginResult = iota

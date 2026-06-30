@@ -5,40 +5,45 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
+	"syscall"
 	"text/tabwriter"
 	"time"
 
 	"github.com/egoroof/wow-server-ping/pkg/wow"
+	"golang.org/x/term"
 )
 
-var HOST = flag.String("host", "logon.wowcircle.me", "realmlist server host")
 var PORT = flag.Int("port", 3724, "realmlist server port")
-var USERNAME = flag.String("username", "", "username")
-var PASSWORD = flag.String("password", "", "password")
 var TIMEOUT = flag.Duration("timeout", time.Second*10, "timeout for network operations")
 
 func main() {
 	flag.Parse()
-
-	if *HOST == "" {
-		fmt.Println("Host cannot be empty")
-		os.Exit(1)
-	}
-	if *USERNAME == "" {
-		fmt.Println("Username cannot be empty")
-		os.Exit(1)
-	}
-	if *PASSWORD == "" {
-		fmt.Println("Password cannot be empty")
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: realmlist user@host")
 		os.Exit(1)
 	}
 
-	address := fmt.Sprintf("%v:%v", *HOST, *PORT)
-	fmt.Printf("-> %v@%v\n", address, *USERNAME)
+	userHost := strings.Split(os.Args[1], "@")
+	if len(userHost) < 2 {
+		fmt.Println("Usage: realmlist user@host")
+		os.Exit(1)
+	}
+	user := userHost[0]
+	host := userHost[1]
 
-	client := wow.NewWowClient(address, *USERNAME, *PASSWORD, *TIMEOUT)
+	fmt.Print("Enter password: ")
+	password, err := term.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println("")
 
-	err := client.Login()
+	address := fmt.Sprintf("%v:%v", host, *PORT)
+	client := wow.NewWowClient(address, user, string(password), *TIMEOUT)
+
+	err = client.Login()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -52,7 +57,7 @@ func main() {
 	}
 	w.Flush()
 
-	filename := fmt.Sprintf("./servers/%v.json", *HOST)
+	filename := fmt.Sprintf("./servers/%v.json", host)
 	json, err := json.MarshalIndent(realms, "", "	")
 	if err != nil {
 		fmt.Println(err)

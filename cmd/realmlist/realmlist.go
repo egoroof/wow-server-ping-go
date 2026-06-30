@@ -51,11 +51,19 @@ func main() {
 
 	realms := client.GetRealmList()
 
+	if len(realms) == 0 {
+		fmt.Println("Server has 0 realms")
+		os.Exit(1)
+	}
+
+	fmt.Printf("Loaded %v realms\n", len(realms))
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintf(w, "\nName\tAddress\n")
 	for _, realm := range realms {
 		fmt.Fprintf(w, "%v\t%v\n", realm.Name, realm.Address)
 	}
 	w.Flush()
+	fmt.Println("")
 
 	filename := fmt.Sprintf("./servers/%v.json", host)
 	json, err := json.MarshalIndent(realms, "", "	")

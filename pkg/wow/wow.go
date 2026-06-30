@@ -2,6 +2,7 @@ package wow
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"slices"
@@ -59,7 +60,11 @@ func (w *wowClient) Login() error {
 
 	err = w.readAuthLogonChallengeServer()
 	if err != nil {
-		return fmt.Errorf("readAuthLogonChallengeServer error: %w", err)
+		if errors.Is(err, ErrLoginFailed) {
+			return err
+		} else {
+			return fmt.Errorf("readAuthLogonChallengeServer error: %w", err)
+		}
 	}
 
 	w.clientPrivateKey = srp6.ClientPrivateKey()
@@ -78,7 +83,11 @@ func (w *wowClient) Login() error {
 
 	err = w.readAuthLogonProofServer()
 	if err != nil {
-		return fmt.Errorf("readAuthLogonProofServer error: %w", err)
+		if errors.Is(err, ErrLoginFailed) {
+			return err
+		} else {
+			return fmt.Errorf("readAuthLogonProofServer error: %w", err)
+		}
 	}
 
 	err = w.writeRealmListClient()
@@ -173,7 +182,7 @@ func (w *wowClient) readAuthLogonChallengeServer() error {
 	result := buf[cursor]
 	cursor++
 	if result != 0 {
-		return fmt.Errorf("login failed: %v\n", loginResultName[result])
+		return fmt.Errorf("%w: %v", ErrLoginFailed, loginResultMessage[result])
 	}
 
 	w.serverPublicKey = buf[cursor : cursor+32]
@@ -242,7 +251,7 @@ func (w *wowClient) readAuthLogonProofServer() error {
 	result := buf[cursor]
 	cursor++
 	if result != 0 {
-		return fmt.Errorf("login failed: %v\n", loginResultName[result])
+		return fmt.Errorf("%w: %v", ErrLoginFailed, loginResultMessage[result])
 	}
 	return nil
 }

@@ -15,15 +15,17 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26"
-      - name: Build Windows binary
-        run: GOOS=windows GOARCH=amd64 go build -o wow-ping.exe wow-ping.go
+      - name: Build Windows binaries
+        run: |
+          GOOS=windows GOARCH=amd64 go build -o wow-ping.exe wow-ping.go
+          GOOS=windows GOARCH=amd64 go build -o realmlist.exe cmd/realmlist/realmlist.go
       - name: Prepare release bundle
         run: |
           NAME="wow-ping-${{ github.ref_name }}.windows-amd64"
           mkdir "$NAME"
           cp -r servers "$NAME/"
           cp ping*.bat "$NAME/"
-          cp wow-ping.exe "$NAME/"
+          cp *.exe "$NAME/"
           cp *.md "$NAME/"
           zip -qr "${NAME}.zip" "$NAME"
       - name: Release

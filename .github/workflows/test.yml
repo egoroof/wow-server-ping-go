@@ -11,3 +11,4 @@ jobs:
         with:
           go-version: "1.26"
       - run: go run wow-ping.go -stats=2 -stats-interval=1s
+      - run: go build cmd/realmlist/realmlist.go

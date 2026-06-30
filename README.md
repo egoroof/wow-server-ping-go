@@ -13,15 +13,41 @@ It can work as a Prometheus metrics exporter and display graphics in Grafana:
 
 ## Usage
 
+### Downloads
+
 For Windows you can find builds on the [Release page](https://github.com/egoroof/wow-server-ping/releases/latest). Open an issue if you need another OS builds.
 
-Server configs are in `servers` folder. You can change them or add another file in same format.
+### Realm list
 
-Start `wow-ping.exe` with `-servers` option to choose servers config. For example `wow-ping.exe -servers x1` will load servers config from `servers/x1.json` file.
+If you are interested in `WoW Circle 3.3.5a` you don't need to extract realm list - it's already included in the build. You can skip this step.
 
-Ping tool will start collecting statistics and will print it to console periodically.
+You will need to extract realm list first. Wow servers can give you realm list only after login, so you will have to enter your username and password. This project comes with `realmlist.exe` utility, which logins to WoW server similar real WoW game client and save realm list to `servers` folder.
 
-Available settings:
+Run with your user and server host:
+
+```
+realmlist.exe user@host
+```
+
+If you worry about your credentials you can also run Wireshark, login in your WoW client and extract realmlist yourself.
+
+### Ping
+
+Simple example, which  loads realm list from `servers/logon.wowcircle.me.json` file, sends ping requests and print statistics every 30 seconds:
+
+```
+wow-ping.exe -servers logon.wowcircle.me
+```
+
+You can filter servers by regexp with `-filter` option:
+
+```
+wow-ping.exe -servers logon.wowcircle.me -filter "x4"
+```
+
+Windows builds comes with some `.bat` files which you can use or make similar for you.
+
+### Available settings
 
 | Flag | Default | Description |
 |---|---|---|

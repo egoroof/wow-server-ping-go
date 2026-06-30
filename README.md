@@ -13,7 +13,7 @@ It can work as a Prometheus metrics exporter and display graphics in Grafana:
 
 ## Usage
 
-For Windows you can find binary in the [Release page](https://github.com/egoroof/wow-server-ping/releases/latest). For other OS you will need golang to compile source code (`go build wow-ping.go`).
+For Windows you can find builds on the [Release page](https://github.com/egoroof/wow-server-ping/releases/latest). Open an issue if you need another OS builds.
 
 Server configs are in `servers` folder. You can change them or add another file in same format.
 

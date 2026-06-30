@@ -13,7 +13,7 @@
 
 ## Использование
 
-Для Windows можно скачать сборку со [страницы релизов](https://github.com/egoroof/wow-server-ping/releases/latest). Для других ОС нужен будет golang для компиляции исходного кода (`go build wow-ping.go`).
+Для Windows можно скачать сборку со [страницы релизов](https://github.com/egoroof/wow-server-ping/releases/latest). Если нужны сборки для других ОС - создайте багрепорт.
 
 Конфиги серверов лежат в папке `servers`. Можете их менять или добавлять новые файлы в том же формате.
 

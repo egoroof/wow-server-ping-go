@@ -54,7 +54,7 @@ Windows builds comes with some `.bat` files which you can use or make similar fo
 | `-servers` | `logon.wowcircle.me` | Servers config from `servers` folder |
 | `-port` | - | Listen port for Prometheus metrics |
 | `-timeout` | `1s` | Ping timeout |
-| `-interval` | `500ms` | Sleep time between requests |
+| `-interval` | `1s` | Sleep time between requests |
 | `-stats-interval` | `30s` | How often stats should be printed to console |
 | `-stats` | - | How many stats to display before exit |
 | `-filter` | - | Regexp for filter servers by name |

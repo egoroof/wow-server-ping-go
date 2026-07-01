@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"net"
+	"os"
 	"time"
 )
 
 var ErrInvalidResponse = errors.New("invalid response")
-var ErrOSTimeout = errors.New("OS goes sleep and causes timeout")
+var ErrResponseBodyBig = errors.New("response body too big")
 
 type ServerResponse struct {
 	Name  string
@@ -48,33 +49,53 @@ func OpenConnection(
 		return
 	}
 
-	SMSG_AUTH_CHALLENGE := []byte{
-		0, 42, // BE size
-		236, 1, // LE opcode 0x1EC
-		1, 0, 0, 0, // LE server_seed
-	}
-	if bytesRead != 44 || !bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) {
-		respose <- ServerResponse{
-			Name:  name,
-			Group: group,
-			Error: ErrInvalidResponse,
-		}
-		return
-	}
-
 	// OS can goes sleep
 	if duration > timeout*2 {
 		respose <- ServerResponse{
 			Name:  name,
 			Group: group,
-			Error: ErrOSTimeout,
+			Error: os.ErrDeadlineExceeded,
+		}
+		return
+	}
+
+	if bytesRead >= len(buf) {
+		respose <- ServerResponse{
+			Name:  name,
+			Group: group,
+			Error: ErrResponseBodyBig,
+		}
+		return
+	}
+
+	// usual response
+	SMSG_AUTH_CHALLENGE := []byte{
+		0, 42, // BE size
+		236, 1, // LE opcode 0x1EC SMSG_AUTH_CHALLENGE
+		1, 0, 0, 0, // LE unknown1
+		// 4x LE server_seed
+		// 32x seed
+	}
+	// response when our ip is blocked
+	// we still can measure duration
+	// can temporarily happen when trying to login with wrong username/password
+	SMSG_AUTH_RESPONSE := []byte{
+		0, 3, // BE size
+		238, 1, // LE opcode 0x1EE SMSG_AUTH_RESPONSE
+		14, // result AUTH_REJECT
+	}
+	if bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) || bytes.Equal(SMSG_AUTH_RESPONSE, buf[0:5]) {
+		respose <- ServerResponse{
+			Name:     name,
+			Group:    group,
+			Duration: int(duration.Milliseconds()),
 		}
 		return
 	}
 
 	respose <- ServerResponse{
-		Name:     name,
-		Group:    group,
-		Duration: int(duration.Milliseconds()),
+		Name:  name,
+		Group: group,
+		Error: ErrInvalidResponse,
 	}
 }

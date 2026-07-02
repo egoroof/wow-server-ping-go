@@ -67,8 +67,8 @@ func OpenConnection(
 		return
 	}
 
-	// OS can goes sleep
-	if duration > timeout*2 {
+	// OS can goes sleep and deadline on read not happen
+	if duration > timeout {
 		respose <- ServerResponse{
 			Name:  name,
 			Group: group,

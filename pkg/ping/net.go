@@ -19,6 +19,24 @@ type ServerResponse struct {
 	Error    error
 }
 
+// normal response
+var smsgAuthChallenge = []byte{
+	0, 42, // BE size
+	236, 1, // LE opcode 0x1EC SMSG_AUTH_CHALLENGE
+	1, 0, 0, 0, // LE unknown1
+	// 4x LE server_seed
+	// 32x seed
+}
+
+// response when our ip is blocked
+// we still can measure duration
+// can temporarily happen when trying to login with wrong username/password
+var smsgAuthResponse = []byte{
+	0, 3, // BE size
+	238, 1, // LE opcode 0x1EE SMSG_AUTH_RESPONSE
+	14, // result AUTH_REJECT
+}
+
 func OpenConnection(
 	name, group, address string,
 	timeout time.Duration,
@@ -68,23 +86,7 @@ func OpenConnection(
 		return
 	}
 
-	// usual response
-	SMSG_AUTH_CHALLENGE := []byte{
-		0, 42, // BE size
-		236, 1, // LE opcode 0x1EC SMSG_AUTH_CHALLENGE
-		1, 0, 0, 0, // LE unknown1
-		// 4x LE server_seed
-		// 32x seed
-	}
-	// response when our ip is blocked
-	// we still can measure duration
-	// can temporarily happen when trying to login with wrong username/password
-	SMSG_AUTH_RESPONSE := []byte{
-		0, 3, // BE size
-		238, 1, // LE opcode 0x1EE SMSG_AUTH_RESPONSE
-		14, // result AUTH_REJECT
-	}
-	if bytes.Equal(SMSG_AUTH_CHALLENGE, buf[0:8]) || bytes.Equal(SMSG_AUTH_RESPONSE, buf[0:5]) {
+	if bytes.Equal(smsgAuthChallenge, buf[0:8]) || bytes.Equal(smsgAuthResponse, buf[0:5]) {
 		respose <- ServerResponse{
 			Name:     name,
 			Group:    group,
